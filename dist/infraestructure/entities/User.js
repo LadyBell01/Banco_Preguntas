@@ -15,41 +15,42 @@ export var UserRoleEnum;
     UserRoleEnum["DOCENTE_EXPERTO"] = "DocenteExperto";
 })(UserRoleEnum || (UserRoleEnum = {}));
 let User = class User {
-    id_user;
-    name_user;
-    email_user;
-    password_user;
-    role_user;
-    status_user;
+    id;
+    nombre;
+    email;
+    password_hash;
+    activo;
+    created_at;
+    updated_at;
 };
 __decorate([
     PrimaryGeneratedColumn(),
     __metadata("design:type", Number)
-], User.prototype, "id_user", void 0);
+], User.prototype, "id", void 0);
 __decorate([
-    Column({ type: "character varying", length: 255 }),
+    Column({ type: "varchar", length: 120 }),
     __metadata("design:type", String)
-], User.prototype, "name_user", void 0);
+], User.prototype, "nombre", void 0);
 __decorate([
-    Column({ type: "character varying", length: 255, unique: true }),
+    Column({ type: "varchar", length: 120, unique: true }),
     __metadata("design:type", String)
-], User.prototype, "email_user", void 0);
+], User.prototype, "email", void 0);
 __decorate([
-    Column({ type: "character varying", length: 255 }),
+    Column({ type: "text" }),
     __metadata("design:type", String)
-], User.prototype, "password_user", void 0);
+], User.prototype, "password_hash", void 0);
 __decorate([
-    Column({
-        type: "enum",
-        enum: UserRoleEnum,
-        default: UserRoleEnum.DOCENTE,
-    }),
-    __metadata("design:type", String)
-], User.prototype, "role_user", void 0);
+    Column({ type: "boolean", default: true }),
+    __metadata("design:type", Boolean)
+], User.prototype, "activo", void 0);
 __decorate([
-    Column({ type: "integer", default: 1 }),
-    __metadata("design:type", Number)
-], User.prototype, "status_user", void 0);
+    Column({ type: "timestamptz" }),
+    __metadata("design:type", Date)
+], User.prototype, "created_at", void 0);
+__decorate([
+    Column({ type: "timestamptz" }),
+    __metadata("design:type", Date)
+], User.prototype, "updated_at", void 0);
 User = __decorate([
     Entity("users")
 ], User);

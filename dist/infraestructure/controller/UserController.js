@@ -7,13 +7,12 @@ export class UserController {
     }
     async createUser(req, res) {
         try {
-            const { name, email, password, role, status } = loadUserData(req.body);
+            const { nombre, email, password_hash, activo } = loadUserData(req.body);
             const user = {
-                name,
+                nombre,
                 email,
-                password,
-                role: (role || "Docente"),
-                status,
+                password_hash,
+                activo,
             };
             const userId = await this.useCase.createUser(user);
             return res
@@ -22,9 +21,7 @@ export class UserController {
         }
         catch (error) {
             if (error instanceof Error) {
-                return res
-                    .status(400)
-                    .json({
+                return res.status(400).json({
                     error: "Error al crear usuario",
                     details: error.message,
                 });
@@ -36,14 +33,14 @@ export class UserController {
         try {
             const id = Number(req.params.id);
             if (Number.isNaN(id)) {
-                return res.status(400).json({ error: "ID inválido" }); // Añadido el punto antes de json
+                return res.status(400).json({ error: "ID inválido" });
             }
             const dataLoad = loadUpdateUserData(req.body);
-            const updated = await this.useCase.updateUser(id, {
-                ...dataLoad,
-                role: dataLoad.role,
+            const updated = await this.useCase.updateUser(id, dataLoad);
+            return res.status(200).json({
+                message: "Usuario actualizado",
+                updated,
             });
-            return res.status(200).json({ message: "Usuario actualizado", updated });
         }
         catch (error) {
             return res.status(500).json({ error: "Error al actualizar" });
@@ -93,13 +90,13 @@ export class UserController {
     }
     async login(req, res) {
         try {
-            const { email, password } = req.body;
-            if (!email || !password) {
+            const { email, password_hash } = req.body;
+            if (!email || !password_hash) {
                 return res.status(400).json({
                     error: "Email y contraseña requeridos"
                 });
             }
-            const token = await this.useCase.login(email, password);
+            const token = await this.useCase.login(email, password_hash);
             return res.status(200).json({ message: "Login éxito", token });
         }
         catch (error) {

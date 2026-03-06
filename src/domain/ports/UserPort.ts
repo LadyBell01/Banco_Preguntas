@@ -1,7 +1,7 @@
 import { User } from "../entities/User.js";
 
 export interface UserPort {
-  createUser(user: Omit<User, "id">): Promise<number>;
+  createUser(user: Omit<User, "id" | "created_at" | "updated_at">): Promise<number>;
   updateUser(id: number, user: Partial<User>): Promise<boolean>;
   deleteUser(id: number): Promise<boolean>;
   getUserById(id: number): Promise<User | null>;

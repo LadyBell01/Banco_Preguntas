@@ -10,14 +10,13 @@ export class UserUseCase {
         if (!existUser) {
             throw new Error("Credenciales Inválidas");
         }
-        const passMatch = await bcrypt.compare(password, existUser.password);
+        const passMatch = await bcrypt.compare(password, existUser.password_hash);
         if (!passMatch) {
             throw new Error("Credenciales Inválidas");
         }
         const token = AuthUseCase.generateToken({
             id: existUser.id,
             email: existUser.email,
-            role: existUser.role,
         });
         return token;
     }
@@ -26,8 +25,8 @@ export class UserUseCase {
         if (existUser) {
             throw new Error("Este email ya está registrado");
         }
-        const hashedPassword = await bcrypt.hash(user.password, 12);
-        user.password = hashedPassword;
+        const hashedPassword = await bcrypt.hash(user.password_hash, 12);
+        user.password_hash = hashedPassword;
         return this.port.createUser(user);
     }
     async getUserById(id) {
@@ -51,8 +50,8 @@ export class UserUseCase {
             }
         }
         const dataToUpdate = { ...user };
-        if (dataToUpdate.password) {
-            dataToUpdate.password = await bcrypt.hash(dataToUpdate.password, 12);
+        if (dataToUpdate.password_hash) {
+            dataToUpdate.password_hash = await bcrypt.hash(dataToUpdate.password_hash, 12);
         }
         return this.port.updateUser(id, dataToUpdate);
     }

@@ -3,12 +3,11 @@ import joi from "joi";
 const roleValues = ["Admin", "Docente", "DocenteExperto"];
 
 export type ReturnUserData = {
-  name: string;
+  nombre: string;
   email: string;
-  password: string;
-  role: string;
-  status: number;
-}
+  password_hash: string;
+  activo: boolean;
+};
 
 type ValidationUserData = {
   error: joi.ValidationError | undefined;
@@ -17,16 +16,17 @@ type ValidationUserData = {
 
 function validateUserData(data: any): ValidationUserData {
   const userSchema = joi.object({
-    name: joi.string()
+    nombre: joi
+      .string()
       .trim()
       .min(3)
       .pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/)
       .required()
       .messages({
-        'string.base': 'El nombre debe ser un texto',
-        'string.empty': 'El nombre es requerido',
-        'string.min': 'El nombre debe tener al menos 3 caracteres',
-        'string.pattern.base': 'El nombre solo puede contener letras y espacios'
+        "string.base": "El nombre debe ser un texto",
+        "string.empty": "El nombre es requerido",
+        "string.min": "El nombre debe tener al menos 3 caracteres",
+        "string.pattern.base": "El nombre solo puede contener letras y espacios",
       }),
 
     email: joi
@@ -34,41 +34,34 @@ function validateUserData(data: any): ValidationUserData {
       .email({ tlds: { allow: false } })
       .required()
       .messages({
-        'string.email': 'Correo electrónico no válido',
-        'string.empty': 'El correo es requerido'
+        "string.email": "Correo electrónico no válido",
+        "string.empty": "El correo es requerido",
       }),
 
-    password: joi
+    password_hash: joi
       .string()
       .min(6)
-      .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)
+      .pattern(/^(?=.*[A-Za-z])(?=.*\d).{6,}$/)
       .required()
       .messages({
-        'string.min': 'La contraseña debe tener al menos 6 caracteres',
-        'string.pattern.base': 'La contraseña debe tener letras y números',
-        'string.empty': 'La contraseña es requerida'
+        "string.min": "La contraseña debe tener al menos 6 caracteres",
+        "string.pattern.base": "La contraseña debe tener letras y números",
+        "string.empty": "La contraseña es requerida",
       }),
 
-    role: joi
-      .string()
-      .valid(...roleValues)
-      .default("Docente")
+    activo: joi
+      .boolean()
+      .default(true)
       .messages({
-        'string.base': 'El rol debe ser un texto',
-        'any.only': 'El rol debe ser: Admin, Docente o DocenteExperto'
-      }),
-
-    status: joi
-      .number()
-      .valid(0, 1)
-      .default(1)
-      .messages({
-        'number.base': 'El estado debe ser numérico',
-        'any.only': 'El estado debe ser 0 o 1'
+        "boolean.base": "El campo activo debe ser verdadero o falso",
       }),
   }).unknown(false);
 
-  const { error, value } = userSchema.validate(data, { abortEarly: false });
+  const { error, value } = userSchema.validate(data, {
+    abortEarly: false,
+    convert: true,
+  });
+
   return { error, value };
 }
 

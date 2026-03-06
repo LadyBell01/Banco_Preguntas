@@ -3,7 +3,7 @@ const roleValues = ["Admin", "Docente", "DocenteExperto"];
 function validateUpdateUserData(data) {
     const schema = joi
         .object({
-        name: joi
+        nombre: joi
             .string()
             .trim()
             .min(3)
@@ -19,28 +19,21 @@ function validateUpdateUserData(data) {
             .messages({
             "string.email": "Correo electrónico no válido",
         }),
-        password: joi
+        password_hash: joi
             .string()
             .min(6)
-            .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)
             .messages({
             "string.min": "La contraseña debe tener al menos 6 caracteres",
-            "string.pattern.base": "La contraseña debe tener letras y números",
+            "string.base": "La contraseña debe ser texto",
         }),
-        role: joi
-            .string()
-            .valid(...roleValues)
+        activo: joi
+            .boolean()
             .messages({
-            "string.base": "El rol debe ser un texto",
-            "any.only": "El rol debe ser: Admin, Docente o DocenteExperto",
-        }),
-        status: joi.number().valid(0, 1).messages({
-            "any.only": "El estado debe ser 0 (inactivo) o 1 (activo)",
-            "number.base": "El estado debe ser numérico",
+            "boolean.base": "El campo activo debe ser verdadero o falso",
         }),
     })
         .unknown(false)
-        .or("name", "email", "password", "role", "status");
+        .or("nombre", "email", "password_hash", "activo");
     const { error, value } = schema.validate(data, {
         abortEarly: false,
         stripUnknown: true,

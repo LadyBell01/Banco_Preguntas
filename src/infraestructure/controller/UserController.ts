@@ -2,7 +2,7 @@ import { UserUseCase } from "../../application/use-cases/UserUseCase.js";
 import { Request, Response } from "express";
 import { loadUserData } from "../Util/user-validation.js";
 import { loadUpdateUserData } from "../Util/user-update-validation.js";
-import { User, UserRole } from "../../domain/entities/User.js";
+import { User } from "../../domain/entities/User.js";
 
 export class UserController {
   private useCase: UserUseCase;
@@ -12,48 +12,48 @@ export class UserController {
   }
 
   async createUser(req: Request, res: Response): Promise<Response> {
-    try {
-      const { name, email, password, role, status } = loadUserData(req.body);
+  try {
+    const { nombre, email, password_hash, activo } = loadUserData(req.body);
 
-      const user: Omit<User, "id"> = {
-        name,
-        email,
-        password,
-        role: (role || "Docente") as UserRole,
-        status,
-      };
-      const userId = await this.useCase.createUser(user);
+    const user: Omit<User, "id" | "created_at" | "updated_at"> = {
+      nombre,
+      email,
+      password_hash,
+      activo,
+    };
 
-      return res
-        .status(201)
-        .json({ message: "Usuario creado con éxito", userId });
-    } catch (error) {
-      if (error instanceof Error) {
-        return res
-          .status(400)
-          .json({
-            error: "Error al crear usuario",
-            details: error.message,
-          });
-      }
-      return res.status(500).json({ error: "Error interno del servidor" });
+    const userId = await this.useCase.createUser(user);
+
+    return res
+      .status(201)
+      .json({ message: "Usuario creado con éxito", userId });
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({
+        error: "Error al crear usuario",
+        details: error.message,
+      });
     }
+
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
+}
 
   async updateUser(req: Request, res: Response): Promise<Response> {
     try {
       const id = Number(req.params.id);
+
       if (Number.isNaN(id)) {
-        return res.status(400).json({ error: "ID inválido" }); // Añadido el punto antes de json
+        return res.status(400).json({ error: "ID inválido" });
       }
 
       const dataLoad = loadUpdateUserData(req.body);
-      const updated = await this.useCase.updateUser(id, {
-        ...dataLoad,
-        role: dataLoad.role as UserRole | undefined,
-      });
+      const updated = await this.useCase.updateUser(id, dataLoad);
 
-      return res.status(200).json({ message: "Usuario actualizado", updated });
+      return res.status(200).json({
+        message: "Usuario actualizado",
+        updated,
+      });
     } catch (error) {
       return res.status(500).json({ error: "Error al actualizar" });
     }
@@ -110,14 +110,14 @@ export class UserController {
 
   async login(req: Request, res: Response): Promise<string | Response> {
     try {
-      const { email, password } = req.body;
-      if (!email || !password) {
+      const { email, password_hash } = req.body;
+      if (!email || !password_hash) {
         return res.status(400).json({
           error: "Email y contraseña requeridos"
         });
       }
 
-      const token = await this.useCase.login(email, password);
+      const token = await this.useCase.login(email, password_hash);
       return res.status(200).json({ message: "Login éxito", token })
 
     } catch (error) {

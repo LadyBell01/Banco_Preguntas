@@ -19,7 +19,8 @@ export const AppDataSource = new DataSource({
     database: envs.DB_NAME,
     schema: "public",
     synchronize: true,
-    logging: true,
+    logging: false,
+    ssl: true,
     entities: [User, Category, Course, Unit, Question, Option, QuestionValidation],
 });
 //Método para la conexión a la base de datos
