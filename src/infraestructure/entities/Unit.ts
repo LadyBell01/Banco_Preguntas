@@ -1,10 +1,10 @@
 import { Column, Entity, ManyToOne, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Course } from "./Course.js";
 
-@Entity("unit")
+@Entity("units")
 export class Unit {
   @PrimaryGeneratedColumn()
-  id_unit!: number;
+  id_units!: number;
 
   @Column({ type: "character varying", length: 255 })
   name_unit!: string;
@@ -13,12 +13,12 @@ export class Unit {
   description_unit!: string;
 
   @Column({ type: "integer" })
-  course_id!: number;
+  courseId!: number;
 
   @Column({ type: "integer", default: 1 })
   status_unit!: number;
 
   @ManyToOne(() => Course, (course) => course.units)
-  @JoinColumn({ name: "course_id" })
+  @JoinColumn({ name: "courseId" })
   course!: Course;
 }

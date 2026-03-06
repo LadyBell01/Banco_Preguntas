@@ -13,39 +13,39 @@ export class OptionAdapter implements OptionPort {
 
   private toDomain(option: OptionEntity): OptionDomain {
     return {
-      id: option.id_option,
+      id_options: option.id_options,
       text: option.text_option,
       isCorrect: option.is_correct_option,
-      questionId: option.question_id,
+      question_id: option.question_id,
       active: option.active_option,
     };
   }
 
-  private toEntity(option: Omit<OptionDomain, "id">): OptionEntity {
+  private toEntity(option: Omit<OptionDomain, "id_options">): OptionEntity {
     const optionEntity = new OptionEntity();
     optionEntity.text_option = option.text;
     optionEntity.is_correct_option = option.isCorrect;
-    optionEntity.question_id = option.questionId;
+    optionEntity.question_id = option.question_id;
     optionEntity.active_option = option.active;
     return optionEntity;
   }
 
-  async createOption(option: Omit<OptionDomain, "id">): Promise<number> {
+  async createOption(option: Omit<OptionDomain, "id_options">): Promise<number> {
     try {
       const newOption = this.toEntity(option);
       const savedOption = await this.optionRepository.save(newOption);
-      return savedOption.id_option;
+      return savedOption.id_options;
     } catch (error) {
       console.error("Error creando opción:", error);
       throw new Error("Error al crear opción");
     }
   }
 
-  async createOptions(options: Omit<OptionDomain, "id">[]): Promise<number[]> {
+  async createOptions(options: Omit<OptionDomain, "id_options">[]): Promise<number[]> {
     try {
       const newOptions = options.map((opt) => this.toEntity(opt));
       const savedOptions = await this.optionRepository.save(newOptions);
-      return savedOptions.map((opt) => opt.id_option);
+      return savedOptions.map((opt) => opt.id_options);
     } catch (error) {
       console.error("Error creando opciones:", error);
       throw new Error("Error al crear opciones");
@@ -55,14 +55,14 @@ export class OptionAdapter implements OptionPort {
   async updateOption(id: number, option: Partial<OptionDomain>): Promise<boolean> {
     try {
       const existingOption = await this.optionRepository.findOne({
-        where: { id_option: id },
+        where: { id_options: id },
       });
       if (!existingOption) return false;
 
       Object.assign(existingOption, {
         text_option: option.text ?? existingOption.text_option,
         is_correct_option: option.isCorrect ?? existingOption.is_correct_option,
-        question_id: option.questionId ?? existingOption.question_id,
+        question_id: option.question_id ?? existingOption.question_id,
         active_option: option.active ?? existingOption.active_option,
       });
 
@@ -77,7 +77,7 @@ export class OptionAdapter implements OptionPort {
   async deleteOption(id: number): Promise<boolean> {
     try {
       const existingOption = await this.optionRepository.findOne({
-        where: { id_option: id },
+        where: { id_options: id },
       });
       if (!existingOption) return false;
 
@@ -106,7 +106,7 @@ export class OptionAdapter implements OptionPort {
   async getOptionById(id: number): Promise<OptionDomain | null> {
     try {
       const option = await this.optionRepository.findOne({
-        where: { id_option: id },
+        where: { id_options: id },
       });
       return option ? this.toDomain(option) : null;
     } catch (error) {

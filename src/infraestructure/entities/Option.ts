@@ -1,10 +1,10 @@
 import { Column, Entity, ManyToOne, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Question } from "./Question.js";
 
-@Entity("option")
+@Entity("options")
 export class Option {
   @PrimaryGeneratedColumn()
-  id_option!: number;
+  id_options!: number;
 
   @Column({ type: "text" })
   text_option!: string;

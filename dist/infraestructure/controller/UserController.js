@@ -1,16 +1,21 @@
 import { loadUserData } from "../Util/user-validation.js";
+import { loadUpdateUserData } from "../Util/user-update-validation.js";
 export class UserController {
-    app;
-    constructor(application) {
-        this.app = application;
+    useCase;
+    constructor(useCase) {
+        this.useCase = useCase;
     }
     async createUser(req, res) {
         try {
-            //Validar los datos de entrada
-            const { name, email, password, status } = loadUserData(req.body);
-            // Crear usuario
-            const user = { name, email, password, status };
-            const userId = await this.app.createUser(user);
+            const { name, email, password, role, status } = loadUserData(req.body);
+            const user = {
+                name,
+                email,
+                password,
+                role: (role || "Docente"),
+                status,
+            };
+            const userId = await this.useCase.createUser(user);
             return res
                 .status(201)
                 .json({ message: "Usuario creado con éxito", userId });
@@ -18,9 +23,9 @@ export class UserController {
         catch (error) {
             if (error instanceof Error) {
                 return res
-                    .status(500)
+                    .status(400)
                     .json({
-                    error: "Error interno del servidor",
+                    error: "Error al crear usuario",
                     details: error.message,
                 });
             }
@@ -31,10 +36,13 @@ export class UserController {
         try {
             const id = Number(req.params.id);
             if (Number.isNaN(id)) {
-                return res.status(400).json({ error: "ID inválido" }); // Añadido el punto antes de json
+                return res.status(400).json({ error: "ID inválido" });
             }
-            const dataLoad = loadUserData(req.body);
-            const updated = await this.app.updateUser(id, dataLoad);
+            const dataLoad = loadUpdateUserData(req.body);
+            const updated = await this.useCase.updateUser(id, {
+                ...dataLoad,
+                role: dataLoad.role,
+            });
             return res.status(200).json({ message: "Usuario actualizado", updated });
         }
         catch (error) {
@@ -43,7 +51,7 @@ export class UserController {
     }
     async getAllUsers(req, res) {
         try {
-            const users = await this.app.getAllUsers();
+            const users = await this.useCase.getAllUsers();
             return res.status(200).json(users);
         }
         catch (error) {
@@ -52,10 +60,14 @@ export class UserController {
     }
     async getUserByEmail(req, res) {
         try {
-            const { email } = req.params;
-            const user = await this.app.getUserByEmail("email");
-            if (!user)
+            const emailParam = req.params.email;
+            if (typeof emailParam !== "string") {
+                return res.status(400).json({ error: "Email inválido" });
+            }
+            const user = await this.useCase.getUserByEmail(emailParam);
+            if (!user) {
                 return res.status(404).json({ message: "No encontrado" });
+            }
             return res.status(200).json(user);
         }
         catch (error) {
@@ -68,8 +80,7 @@ export class UserController {
             if (Number.isNaN(id)) {
                 return res.status(400).json({ error: "ID inválido" });
             }
-            // Llama al método deleteUser que ya tienes en UserApplication
-            await this.app.deleteUser(id);
+            await this.useCase.deleteUser(id);
             return res.status(200).json({ message: "Usuario eliminado con éxito" });
         }
         catch (error) {
@@ -77,6 +88,21 @@ export class UserController {
                 message: "Error al eliminar el usuario",
                 error: error.message
             });
+        }
+    }
+    async login(req, res) {
+        try {
+            const { email, password } = req.body;
+            if (!email || !password) {
+                return res.status(400).json({
+                    error: "Email y contraseña requeridos"
+                });
+            }
+            const token = await this.useCase.login(email, password);
+            return res.status(200).json({ message: "Login éxito", token });
+        }
+        catch (error) {
+            return res.status(401).json({ error: "Credenciales Inválidas" });
         }
     }
 }

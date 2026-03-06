@@ -1,52 +1,58 @@
 import { Router } from "express";
 import { UserController } from "../controller/UserController.js";
-import { UserApplication } from "../../application/UserApplication.js";
+import { UserUseCase } from "../../application/use-cases/UserUseCase.js";
 import { UserAdapter } from "../adapter/UserAdapter.js";
+import { authenticateToken } from "../web/authMiddleware.js";
 const router = Router();
-// Inicialización de las capas
 const userAdapter = new UserAdapter();
-const userApp = new UserApplication(userAdapter);
-const userController = new UserController(userApp);
-//definición de las rutas
-router.post("/users", async (req, res) => {
+const userUseCase = new UserUseCase(userAdapter);
+const userController = new UserController(userUseCase);
+router.post("/users", async (req, res, next) => {
     try {
         await userController.createUser(req, res);
     }
     catch (error) {
-        res.status(500).json({ message: "Error en la creación de usuario", error });
+        next(error);
     }
 });
-router.get("/users", async (req, res) => {
+router.get("/users", authenticateToken, async (req, res, next) => {
     try {
         await userController.getAllUsers(req, res);
     }
     catch (error) {
-        res.status(500).json({ message: "Error en la consulta de datos", error });
+        next(error);
     }
 });
-router.get("/users/email/:email", async (req, res) => {
+router.get("/users/email/:email", authenticateToken, async (req, res, next) => {
     try {
         await userController.getUserByEmail(req, res);
     }
     catch (error) {
-        await userController.getUserByEmail(req, res);
-        res.status(500).json({ message: "Error en la consulta de datos", error });
+        next(error);
     }
 });
-router.put("/users/:id", async (req, res) => {
+router.put("/users/:id", authenticateToken, async (req, res, next) => {
     try {
         await userController.updateUser(req, res);
     }
     catch (error) {
-        res.status(500).json({ message: "Error en la actualización", error });
+        next(error);
     }
 });
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/:id", authenticateToken, async (req, res, next) => {
     try {
         await userController.deleteUser(req, res);
     }
     catch (error) {
-        res.status(500).json({ message: "Error al eliminar usuario", error });
+        next(error);
+    }
+});
+router.post("/login", async (req, res, next) => {
+    try {
+        await userController.login(req, res);
+    }
+    catch (error) {
+        next(error);
     }
 });
 export default router;

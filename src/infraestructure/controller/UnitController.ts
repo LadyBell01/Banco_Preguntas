@@ -13,7 +13,7 @@ export class UnitController {
   async createUnit(req: Request, res: Response): Promise<Response> {
     try {
       const { name, description, courseId, status } = loadUnitData(req.body);
-      const unit: Omit<Unit, "id"> = { name, description, courseId, status };
+      const unit: Omit<Unit, "id_units"> = { name, description, courseId, status };
       const unitId = await this.useCase.createUnit(unit);
 
       return res.status(201).json({

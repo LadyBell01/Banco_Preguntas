@@ -6,7 +6,7 @@ import { CategoryPort } from "../../domain/ports/CategoryPort.js";
 export interface CreateQuestionWithOptionsDTO {
   statement: string;
   difficulty: Difficulty;
-  categoryId: number;
+  category_id: number;
   status?: QuestionStatus;
   options: {
     text: string;
@@ -34,7 +34,7 @@ export class QuestionUseCase {
   }
 
   async createQuestionWithOptions(data: CreateQuestionWithOptionsDTO): Promise<number> {
-    const category = await this.categoryPort.getCategoryById(data.categoryId);
+    const category = await this.categoryPort.getCategoryById(data.category_id);
     if (!category) {
       throw new Error("La categoría especificada no existe");
     }
@@ -51,20 +51,20 @@ export class QuestionUseCase {
       throw new Error("Solo puede haber una opción correcta por pregunta");
     }
 
-    const questionData: Omit<Question, "id"> = {
+    const questionData: Omit<Question, "id_questions"> = {
       statement: data.statement,
       difficulty: data.difficulty,
-      categoryId: data.categoryId,
+      category_id: data.category_id,
       status: data.status || QuestionStatus.BORRADOR,
       active: 1,
     };
 
     const questionId = await this.questionPort.createQuestion(questionData);
 
-    const optionsData: Omit<Option, "id">[] = data.options.map((opt) => ({
+    const optionsData: Omit<Option, "id_options">[] = data.options.map((opt) => ({
       text: opt.text,
       isCorrect: opt.isCorrect,
-      questionId: questionId,
+      question_id: questionId,
       active: 1,
     }));
 
@@ -94,7 +94,7 @@ export class QuestionUseCase {
     const questionsWithOptions: QuestionWithOptions[] = [];
 
     for (const question of questions) {
-      const options = await this.optionPort.getOptionsByQuestionId(question.id);
+      const options = await this.optionPort.getOptionsByQuestionId(question.id_questions);
       questionsWithOptions.push({ ...question, options });
     }
 
@@ -111,7 +111,7 @@ export class QuestionUseCase {
     const questionsWithOptions: QuestionWithOptions[] = [];
 
     for (const question of questions) {
-      const options = await this.optionPort.getOptionsByQuestionId(question.id);
+      const options = await this.optionPort.getOptionsByQuestionId(question.id_questions);
       questionsWithOptions.push({ ...question, options });
     }
 
@@ -123,7 +123,7 @@ export class QuestionUseCase {
     const questionsWithOptions: QuestionWithOptions[] = [];
 
     for (const question of questions) {
-      const options = await this.optionPort.getOptionsByQuestionId(question.id);
+      const options = await this.optionPort.getOptionsByQuestionId(question.id_questions);
       questionsWithOptions.push({ ...question, options });
     }
 
@@ -135,7 +135,7 @@ export class QuestionUseCase {
     const questionsWithOptions: QuestionWithOptions[] = [];
 
     for (const question of questions) {
-      const options = await this.optionPort.getOptionsByQuestionId(question.id);
+      const options = await this.optionPort.getOptionsByQuestionId(question.id_questions);
       questionsWithOptions.push({ ...question, options });
     }
 
@@ -148,8 +148,8 @@ export class QuestionUseCase {
       throw new Error("Pregunta no encontrada");
     }
 
-    if (data.categoryId) {
-      const category = await this.categoryPort.getCategoryById(data.categoryId);
+    if (data.category_id) {
+      const category = await this.categoryPort.getCategoryById(data.category_id);
       if (!category) {
         throw new Error("La categoría especificada no existe");
       }
@@ -190,10 +190,10 @@ export class QuestionUseCase {
 
     await this.optionPort.deleteOptionsByQuestionId(questionId);
 
-    const optionsData: Omit<Option, "id">[] = options.map((opt) => ({
+    const optionsData: Omit<Option, "id_options">[] = options.map((opt) => ({
       text: opt.text,
       isCorrect: opt.isCorrect,
-      questionId: questionId,
+      question_id: questionId,
       active: 1,
     }));
 

@@ -1,17 +1,35 @@
 import express from "express";
+import cors from "cors";
 import userRoutes from "../routes/UserRoutes.js";
+import categoryRoutes from "../routes/CategoryRoutes.js";
+import courseRoutes from "../routes/CourseRoutes.js";
+import unitRoutes from "../routes/UnitRoutes.js";
+import questionRoutes from "../routes/QuestionRoutes.js";
+import validationRoutes from "../routes/ValidationRoutes.js";
+import { errorHandler, notFoundHandler } from "./errorMiddleware.js";
 class App {
     app;
     constructor() {
         this.app = express();
         this.middlewares();
         this.routes();
+        this.errorHandlers();
     }
     middlewares() {
+        this.app.use(cors());
         this.app.use(express.json());
     }
     routes() {
         this.app.use("/api", userRoutes);
+        this.app.use("/api", categoryRoutes);
+        this.app.use("/api", courseRoutes);
+        this.app.use("/api", unitRoutes);
+        this.app.use("/api", questionRoutes);
+        this.app.use("/api", validationRoutes);
+    }
+    errorHandlers() {
+        this.app.use(notFoundHandler);
+        this.app.use(errorHandler);
     }
     getApp() {
         return this.app;

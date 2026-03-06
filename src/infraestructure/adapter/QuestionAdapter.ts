@@ -13,30 +13,30 @@ export class QuestionAdapter implements QuestionPort {
 
   private toDomain(question: QuestionEntity): QuestionDomain {
     return {
-      id: question.id_question,
+      id_questions: question.id_questions,
       statement: question.statement_question,
       difficulty: question.difficulty_question as unknown as Difficulty,
-      categoryId: question.category_id,
+      category_id: question.category_id,
       status: question.status_question as unknown as QuestionStatus,
       active: question.active_question,
     };
   }
 
-  private toEntity(question: Omit<QuestionDomain, "id">): QuestionEntity { 
+  private toEntity(question: Omit<QuestionDomain, "id_questions">): QuestionEntity {
     const questionEntity = new QuestionEntity();
     questionEntity.statement_question = question.statement;
     questionEntity.difficulty_question = question.difficulty as unknown as DifficultyEnum;
-    questionEntity.category_id = question.categoryId;
+    questionEntity.category_id = question.category_id;
     questionEntity.status_question = question.status as unknown as QuestionStatusEnum;
     questionEntity.active_question = question.active;
     return questionEntity;
   }
 
-  async createQuestion(question: Omit<QuestionDomain, "id">): Promise<number> {
+  async createQuestion(question: Omit<QuestionDomain, "id_questions">): Promise<number> {
     try {
       const newQuestion = this.toEntity(question);
       const savedQuestion = await this.questionRepository.save(newQuestion);
-      return savedQuestion.id_question;
+      return savedQuestion.id_questions;
     } catch (error) {
       console.error("Error creando pregunta:", error);
       throw new Error("Error al crear pregunta");
@@ -46,14 +46,14 @@ export class QuestionAdapter implements QuestionPort {
   async updateQuestion(id: number, question: Partial<QuestionDomain>): Promise<boolean> {
     try {
       const existingQuestion = await this.questionRepository.findOne({
-        where: { id_question: id },
+        where: { id_questions: id },
       });
       if (!existingQuestion) return false;
 
       Object.assign(existingQuestion, {
         statement_question: question.statement ?? existingQuestion.statement_question,
         difficulty_question: question.difficulty ?? existingQuestion.difficulty_question,
-        category_id: question.categoryId ?? existingQuestion.category_id,
+        category_id: question.category_id ?? existingQuestion.category_id,
         status_question: question.status ?? existingQuestion.status_question,
         active_question: question.active ?? existingQuestion.active_question,
       });
@@ -69,7 +69,7 @@ export class QuestionAdapter implements QuestionPort {
   async deleteQuestion(id: number): Promise<boolean> {
     try {
       const existingQuestion = await this.questionRepository.findOne({
-        where: { id_question: id },
+        where: { id_questions: id },
       });
       if (!existingQuestion) return false;
 
@@ -85,7 +85,7 @@ export class QuestionAdapter implements QuestionPort {
   async getQuestionById(id: number): Promise<QuestionDomain | null> {
     try {
       const question = await this.questionRepository.findOne({
-        where: { id_question: id },
+        where: { id_questions: id },
       });
       return question ? this.toDomain(question) : null;
     } catch (error) {

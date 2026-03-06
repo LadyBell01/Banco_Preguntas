@@ -1,16 +1,17 @@
 import joi from "joi";
+const roleValues = ["Admin", "Docente", "DocenteExperto"];
 function validateUserData(data) {
     const userSchema = joi.object({
         name: joi.string()
             .trim()
             .min(3)
-            .pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)?$/)
+            .pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/)
             .required()
             .messages({
             'string.base': 'El nombre debe ser un texto',
             'string.empty': 'El nombre es requerido',
             'string.min': 'El nombre debe tener al menos 3 caracteres',
-            'string.pattern.base': 'El nombre solo puede contener letras y un espacio'
+            'string.pattern.base': 'El nombre solo puede contener letras y espacios'
         }),
         email: joi
             .string()
@@ -30,14 +31,21 @@ function validateUserData(data) {
             'string.pattern.base': 'La contraseña debe tener letras y números',
             'string.empty': 'La contraseña es requerida'
         }),
+        role: joi
+            .string()
+            .valid(...roleValues)
+            .default("Docente")
+            .messages({
+            'string.base': 'El rol debe ser un texto',
+            'any.only': 'El rol debe ser: Admin, Docente o DocenteExperto'
+        }),
         status: joi
             .number()
             .valid(0, 1)
-            .required()
+            .default(1)
             .messages({
-            'number base': 'El estado debe ser numérico',
-            'any only': 'El estado debe ser 0 o 1',
-            'any.required': 'El estado es obligatorio'
+            'number.base': 'El estado debe ser numérico',
+            'any.only': 'El estado debe ser 0 o 1'
         }),
     }).unknown(false);
     const { error, value } = userSchema.validate(data, { abortEarly: false });
@@ -46,8 +54,7 @@ function validateUserData(data) {
 export const loadUserData = (data) => {
     const result = validateUserData(data);
     if (result.error) {
-        // Une todos los mensajes en una sola cadena (o podrías retornar un array)
-        const message = result.error.details.map(d => d.message).join(',');
+        const message = result.error.details.map(d => d.message).join(', ');
         throw new Error(message);
     }
     return result.value;

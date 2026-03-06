@@ -8,7 +8,7 @@ export class CategoryUseCase {
     this.port = port;
   }
 
-  async createCategory(category: Omit<Category, "id">): Promise<number> {
+  async createCategory(category: Omit<Category, "id_categories">): Promise<number> {
     const existCategory = await this.port.getCategoryByName(category.name);
     if (existCategory) {
       throw new Error("Esta categoría ya existe");
@@ -36,7 +36,7 @@ export class CategoryUseCase {
 
     if (category.name) {
       const nameTaken = await this.port.getCategoryByName(category.name);
-      if (nameTaken && nameTaken.id !== id) {
+      if (nameTaken && nameTaken.id_categories !== id) {
         throw new Error("El nombre de categoría ya está en uso");
       }
     }

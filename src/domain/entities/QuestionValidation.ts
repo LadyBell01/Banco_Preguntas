@@ -4,7 +4,7 @@ export enum ValidationResult {
 }
 
 export interface QuestionValidation {
-  id: number;
+  id_question_validations: number;
   questionId: number;
   validatorId: number;
   result: ValidationResult;

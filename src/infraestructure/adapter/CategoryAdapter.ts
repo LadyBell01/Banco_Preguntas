@@ -13,14 +13,14 @@ export class CategoryAdapter implements CategoryPort {
 
   private toDomain(category: CategoryEntity): CategoryDomain {
     return {
-      id: category.id_category,
+      id_categories: category.id_categories,
       name: category.name_category,
       description: category.description_category,
       status: category.status_category,
     };
   }
 
-  private toEntity(category: Omit<CategoryDomain, "id">): CategoryEntity {
+  private toEntity(category: Omit<CategoryDomain, "id_categories">): CategoryEntity {
     const categoryEntity = new CategoryEntity();
     categoryEntity.name_category = category.name;
     categoryEntity.description_category = category.description;
@@ -28,11 +28,11 @@ export class CategoryAdapter implements CategoryPort {
     return categoryEntity;
   }
 
-  async createCategory(category: Omit<CategoryDomain, "id">): Promise<number> {
+  async createCategory(category: Omit<CategoryDomain, "id_categories">): Promise<number> {
     try {
       const newCategory = this.toEntity(category);
       const savedCategory = await this.categoryRepository.save(newCategory);
-      return savedCategory.id_category;
+      return savedCategory.id_categories;
     } catch (error) {
       console.error("Error creando categoría:", error);
       throw new Error("Error al crear categoría");
@@ -42,7 +42,7 @@ export class CategoryAdapter implements CategoryPort {
   async updateCategory(id: number, category: Partial<CategoryDomain>): Promise<boolean> {
     try {
       const existingCategory = await this.categoryRepository.findOne({
-        where: { id_category: id },
+        where: { id_categories: id },
       });
       if (!existingCategory) return false;
 
@@ -63,7 +63,7 @@ export class CategoryAdapter implements CategoryPort {
   async deleteCategory(id: number): Promise<boolean> {
     try {
       const existingCategory = await this.categoryRepository.findOne({
-        where: { id_category: id },
+        where: { id_categories: id },
       });
       if (!existingCategory) return false;
 
@@ -82,7 +82,7 @@ export class CategoryAdapter implements CategoryPort {
   async getCategoryById(id: number): Promise<CategoryDomain | null> {
     try {
       const category = await this.categoryRepository.findOne({
-        where: { id_category: id },
+        where: { id_categories: id },
       });
       return category ? this.toDomain(category) : null;
     } catch (error) {

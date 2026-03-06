@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne, OneToMany, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Category } from "./Category.js";
 import { Option } from "./Option.js";
+import { QuestionValidation } from "./QuestionValidation.js";
 
 export enum DifficultyEnum {
   BAJA = "Baja",
@@ -16,10 +17,10 @@ export enum QuestionStatusEnum {
   PUBLICADA = "Publicada",
 }
 
-@Entity("question")
+@Entity("questions")
 export class Question {
   @PrimaryGeneratedColumn()
-  id_question!: number;
+  id_questions!: number;
 
   @Column({ type: "text" })
   statement_question!: string;
@@ -44,10 +45,13 @@ export class Question {
   @Column({ type: "integer", default: 1 })
   active_question!: number;
 
-  @ManyToOne(() => Category)
+  @ManyToOne(() => Category, (category) => category.questions)
   @JoinColumn({ name: "category_id" })
   category!: Category;
 
   @OneToMany(() => Option, (option) => option.question, { cascade: true })
   options!: Option[];
+
+  @OneToMany(() => QuestionValidation, (validation) => validation.question, { cascade: true })
+  validations!: QuestionValidation[];
 }

@@ -13,7 +13,7 @@ export class UserAdapter implements UserPort {
 
   private toDomain(user: UserEntity): UserDomain {
     return {
-      id: user.id_user,
+      id_users: user.id_users,
       name: user.name_user,
       email: user.email_user,
       password: user.password_user,
@@ -22,7 +22,7 @@ export class UserAdapter implements UserPort {
     };
   }
 
-  private toEntity(user: Omit<UserDomain, "id">): UserEntity {
+  private toEntity(user: Omit<UserDomain, "id_users">): UserEntity {
     const userEntity = new UserEntity();
     userEntity.name_user = user.name;
     userEntity.email_user = user.email;
@@ -32,11 +32,11 @@ export class UserAdapter implements UserPort {
     return userEntity;
   }
 
-  async createUser(user: Omit<UserDomain, "id">): Promise<number> {
+  async createUser(user: Omit<UserDomain, "id_users">): Promise<number> {
     try {
       const newUser = this.toEntity(user);
       const savedUser = await this.userRepository.save(newUser);
-      return savedUser.id_user;
+      return savedUser.id_users;
     } catch (error) {
       console.error("Error creando usuario:", error);
       throw new Error("Error al crear usuario");
@@ -45,7 +45,7 @@ export class UserAdapter implements UserPort {
 
   async updateUser(id: number, user: Partial<UserDomain>): Promise<boolean> {
     try {
-      const existingUser = await this.userRepository.findOne({ where: { id_user: id } });
+      const existingUser = await this.userRepository.findOne({ where: { id_users: id } });
       if (!existingUser) return false;
 
       Object.assign(existingUser, {
@@ -67,7 +67,7 @@ export class UserAdapter implements UserPort {
 
   async deleteUser(id: number): Promise<boolean> {
     try {
-      const existingUser = await this.userRepository.findOne({ where: { id_user: id } });
+      const existingUser = await this.userRepository.findOne({ where: { id_users: id } });
       if (!existingUser) return false;
 
       // Actualizar solo el estatus a 0 baja
@@ -86,7 +86,7 @@ export class UserAdapter implements UserPort {
 
   async getUserById(id: number): Promise<UserDomain | null> {
     try {
-      const user = await this.userRepository.findOne({ where: { id_user: id } });
+      const user = await this.userRepository.findOne({ where: { id_users: id } });
       return user ? this.toDomain(user) : null;
     } catch (error) {
       console.error("Error obteniendo usuario por ID:", error);
@@ -104,7 +104,7 @@ export class UserAdapter implements UserPort {
     if (!user) return null;
 
     return {
-      id: user.id_user,
+      id_users: user.id_users,
       name: user.name_user,
       email: user.email_user,
       password: user.password_user,

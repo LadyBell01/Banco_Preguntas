@@ -8,7 +8,7 @@ export class CourseUseCase {
     this.port = port;
   }
 
-  async createCourse(course: Omit<Course, "id">): Promise<number> {
+  async createCourse(course: Omit<Course, "id_courses">): Promise<number> {
     const existCourse = await this.port.getCourseByName(course.name);
     if (existCourse) {
       throw new Error("Este curso ya existe");
@@ -36,7 +36,7 @@ export class CourseUseCase {
 
     if (course.name) {
       const nameTaken = await this.port.getCourseByName(course.name);
-      if (nameTaken && nameTaken.id !== id) {
+      if (nameTaken && nameTaken.id_courses !== id) {
         throw new Error("El nombre del curso ya está en uso");
       }
     }

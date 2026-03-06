@@ -13,7 +13,7 @@ function validateEnvVars(vars) {
     return { error, value };
 }
 const loadEnvVars = () => {
-    //Validar los datos
+    //Validar datos
     const result = validateEnvVars(process.env);
     if (result.error) {
         throw new Error(result.error.message);

@@ -17,7 +17,7 @@ export class QuestionController {
       const questionData: CreateQuestionWithOptionsDTO = {
         statement: validatedData.statement,
         difficulty: validatedData.difficulty as Difficulty,
-        categoryId: validatedData.categoryId,
+        category_id: validatedData.categoryId,
         status: validatedData.status as QuestionStatus,
         options: validatedData.options,
       };
@@ -92,7 +92,7 @@ export class QuestionController {
       const difficulty = req.params.difficulty as string;
       const validDifficulties = ["Baja", "Media", "Alta"];
 
-    if (!validDifficulties.includes(difficulty)) {
+      if (!validDifficulties.includes(difficulty)) {
         return res.status(400).json({
           error: "Dificultad inválida",
           details: "Debe ser: Baja, Media o Alta",
@@ -136,7 +136,7 @@ export class QuestionController {
       const updated = await this.useCase.updateQuestion(id, {
         statement: validatedData.statement,
         difficulty: validatedData.difficulty as Difficulty | undefined,
-        categoryId: validatedData.categoryId,
+        category_id: validatedData.categoryId,
         status: validatedData.status as QuestionStatus | undefined,
       });
 

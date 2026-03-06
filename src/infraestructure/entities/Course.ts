@@ -1,10 +1,10 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Unit } from "./Unit.js";
 
-@Entity("course")
+@Entity("courses")
 export class Course {
   @PrimaryGeneratedColumn()
-  id_course!: number;
+  id_courses!: number;
 
   @Column({ type: "character varying", length: 255 })
   name_course!: string;

@@ -7,13 +7,13 @@ export enum ValidationResultEnum {
   RECHAZADA = "Rechazada",
 }
 
-@Entity("question_validation")
+@Entity("question_validations")
 export class QuestionValidation {
   @PrimaryGeneratedColumn()
-  id_validation!: number;
+  id_question_validations!: number;
 
   @Column({ type: "integer" })
-  question_id!: number;
+  questionId!: number;
 
   @Column({ type: "integer" })
   validator_id!: number;
@@ -30,8 +30,8 @@ export class QuestionValidation {
   @CreateDateColumn({ type: "timestamp" })
   validated_at!: Date;
 
-  @ManyToOne(() => Question)
-  @JoinColumn({ name: "question_id" })
+  @ManyToOne(() => Question, (question) => question.validations)
+  @JoinColumn({ name: "questionId" })
   question!: Question;
 
   @ManyToOne(() => User)

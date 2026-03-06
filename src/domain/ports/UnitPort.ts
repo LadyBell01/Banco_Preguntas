@@ -1,7 +1,7 @@
 import { Unit } from "../entities/Unit.js";
 
 export interface UnitPort {
-  createUnit(unit: Omit<Unit, "id">): Promise<number>;
+  createUnit(unit: Omit<Unit, "id_units">): Promise<number>;
   updateUnit(id: number, unit: Partial<Unit>): Promise<boolean>;
   deleteUnit(id: number): Promise<boolean>;
   getUnitById(id: number): Promise<Unit | null>;

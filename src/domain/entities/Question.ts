@@ -13,10 +13,10 @@ export enum QuestionStatus {
 }
 
 export interface Question {
-  id: number;
+  id_questions: number;
   statement: string;
   difficulty: Difficulty;
-  categoryId: number;
+  category_id: number;
   status: QuestionStatus;
   active: number;
 }

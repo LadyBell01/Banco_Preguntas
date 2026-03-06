@@ -13,7 +13,7 @@ export class CategoryController {
   async createCategory(req: Request, res: Response): Promise<Response> {
     try {
       const { name, description, status } = loadCategoryData(req.body);
-      const category: Omit<Category, "id"> = { name, description, status };
+      const category: Omit<Category, "id_categories"> = { name, description, status };
       const categoryId = await this.useCase.createCategory(category);
 
       return res.status(201).json({

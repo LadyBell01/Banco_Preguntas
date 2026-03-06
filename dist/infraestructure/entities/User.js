@@ -7,32 +7,47 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Column, Entity, PrimaryGeneratedColumn } from "../../../node_modules/typeorm/index.js";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+export var UserRoleEnum;
+(function (UserRoleEnum) {
+    UserRoleEnum["ADMIN"] = "Admin";
+    UserRoleEnum["DOCENTE"] = "Docente";
+    UserRoleEnum["DOCENTE_EXPERTO"] = "DocenteExperto";
+})(UserRoleEnum || (UserRoleEnum = {}));
 let User = class User {
-    id_user;
+    id_users;
     name_user;
     email_user;
     password_user;
+    role_user;
     status_user;
 };
 __decorate([
     PrimaryGeneratedColumn(),
     __metadata("design:type", Number)
-], User.prototype, "id_user", void 0);
+], User.prototype, "id_users", void 0);
 __decorate([
-    Column({ type: "varchar", length: 255 }),
+    Column({ type: "character varying", length: 255 }),
     __metadata("design:type", String)
 ], User.prototype, "name_user", void 0);
 __decorate([
-    Column({ type: "varchar", length: 255, unique: true }),
+    Column({ type: "character varying", length: 255, unique: true }),
     __metadata("design:type", String)
 ], User.prototype, "email_user", void 0);
 __decorate([
-    Column({ type: "varchar", length: 255 }),
+    Column({ type: "character varying", length: 255 }),
     __metadata("design:type", String)
 ], User.prototype, "password_user", void 0);
 __decorate([
-    Column({ type: "varchar", length: 255 }),
+    Column({
+        type: "enum",
+        enum: UserRoleEnum,
+        default: UserRoleEnum.DOCENTE,
+    }),
+    __metadata("design:type", String)
+], User.prototype, "role_user", void 0);
+__decorate([
+    Column({ type: "integer", default: 1 }),
     __metadata("design:type", Number)
 ], User.prototype, "status_user", void 0);
 User = __decorate([

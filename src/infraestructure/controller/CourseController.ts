@@ -13,7 +13,7 @@ export class CourseController {
   async createCourse(req: Request, res: Response): Promise<Response> {
     try {
       const { name, description, status } = loadCourseData(req.body);
-      const course: Omit<Course, "id"> = { name, description, status };
+      const course: Omit<Course, "id_courses"> = { name, description, status };
       const courseId = await this.useCase.createCourse(course);
 
       return res.status(201).json({

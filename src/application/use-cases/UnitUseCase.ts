@@ -11,7 +11,7 @@ export class UnitUseCase {
     this.coursePort = coursePort;
   }
 
-  async createUnit(unit: Omit<Unit, "id">): Promise<number> {
+  async createUnit(unit: Omit<Unit, "id_units">): Promise<number> {
     const existCourse = await this.coursePort.getCourseById(unit.courseId);
     if (!existCourse) {
       throw new Error("El curso especificado no existe");
@@ -60,7 +60,7 @@ export class UnitUseCase {
     if (unit.name) {
       const nameTaken = await this.port.getUnitByName(unit.name);
       const targetCourseId = unit.courseId ?? existingUnit.courseId;
-      if (nameTaken && nameTaken.id !== id && nameTaken.courseId === targetCourseId) {
+      if (nameTaken && nameTaken.id_units !== id && nameTaken.courseId === targetCourseId) {
         throw new Error("El nombre de la unidad ya está en uso en este curso");
       }
     }

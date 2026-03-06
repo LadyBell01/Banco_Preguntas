@@ -13,28 +13,28 @@ export class UnitAdapter implements UnitPort {
 
   private toDomain(unit: UnitEntity): UnitDomain {
     return {
-      id: unit.id_unit,
+      id_units: unit.id_units,
       name: unit.name_unit,
       description: unit.description_unit,
-      courseId: unit.course_id,
+      courseId: unit.courseId,
       status: unit.status_unit,
     };
   }
 
-  private toEntity(unit: Omit<UnitDomain, "id">): UnitEntity {
+  private toEntity(unit: Omit<UnitDomain, "id_units">): UnitEntity {
     const unitEntity = new UnitEntity();
     unitEntity.name_unit = unit.name;
     unitEntity.description_unit = unit.description;
-    unitEntity.course_id = unit.courseId;
+    unitEntity.courseId = unit.courseId;
     unitEntity.status_unit = unit.status;
     return unitEntity;
   }
 
-  async createUnit(unit: Omit<UnitDomain, "id">): Promise<number> {
+  async createUnit(unit: Omit<UnitDomain, "id_units">): Promise<number> {
     try {
       const newUnit = this.toEntity(unit);
       const savedUnit = await this.unitRepository.save(newUnit);
-      return savedUnit.id_unit;
+      return savedUnit.id_units;
     } catch (error) {
       console.error("Error creando unidad:", error);
       throw new Error("Error al crear unidad");
@@ -44,14 +44,14 @@ export class UnitAdapter implements UnitPort {
   async updateUnit(id: number, unit: Partial<UnitDomain>): Promise<boolean> {
     try {
       const existingUnit = await this.unitRepository.findOne({
-        where: { id_unit: id },
+        where: { id_units: id },
       });
       if (!existingUnit) return false;
 
       Object.assign(existingUnit, {
         name_unit: unit.name ?? existingUnit.name_unit,
         description_unit: unit.description ?? existingUnit.description_unit,
-        course_id: unit.courseId ?? existingUnit.course_id,
+        courseId: unit.courseId ?? existingUnit.courseId,
         status_unit: unit.status ?? existingUnit.status_unit,
       });
 
@@ -66,7 +66,7 @@ export class UnitAdapter implements UnitPort {
   async deleteUnit(id: number): Promise<boolean> {
     try {
       const existingUnit = await this.unitRepository.findOne({
-        where: { id_unit: id },
+        where: { id_units: id },
       });
       if (!existingUnit) return false;
 
@@ -85,7 +85,7 @@ export class UnitAdapter implements UnitPort {
   async getUnitById(id: number): Promise<UnitDomain | null> {
     try {
       const unit = await this.unitRepository.findOne({
-        where: { id_unit: id },
+        where: { id_units: id },
       });
       return unit ? this.toDomain(unit) : null;
     } catch (error) {
@@ -108,7 +108,7 @@ export class UnitAdapter implements UnitPort {
   async getUnitsByCourseId(courseId: number): Promise<UnitDomain[]> {
     try {
       const units = await this.unitRepository.find({
-        where: { course_id: courseId, status_unit: 1 },
+        where: { courseId: courseId, status_unit: 1 },
       });
       return units.map((unit) => this.toDomain(unit));
     } catch (error) {

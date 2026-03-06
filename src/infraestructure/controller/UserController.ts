@@ -15,7 +15,7 @@ export class UserController {
     try {
       const { name, email, password, role, status } = loadUserData(req.body);
 
-      const user: Omit<User, "id"> = {
+      const user: Omit<User, "id_users"> = {
         name,
         email,
         password,
@@ -44,7 +44,7 @@ export class UserController {
     try {
       const id = Number(req.params.id);
       if (Number.isNaN(id)) {
-        return res.status(400).json({ error: "ID inválido" }); // Añadido el punto antes de json
+        return res.status(400).json({ error: "ID inválido" }); 
       }
 
       const dataLoad = loadUpdateUserData(req.body);
@@ -69,24 +69,24 @@ export class UserController {
   }
 
   async getUserByEmail(req: Request, res: Response): Promise<Response> {
-  try {
-    const emailParam = req.params.email;
+    try {
+      const emailParam = req.params.email;
 
-    if (typeof emailParam !== "string") {
-      return res.status(400).json({ error: "Email inválido" });
+      if (typeof emailParam !== "string") {
+        return res.status(400).json({ error: "Email inválido" });
+      }
+
+      const user = await this.useCase.getUserByEmail(emailParam);
+
+      if (!user) {
+        return res.status(404).json({ message: "No encontrado" });
+      }
+
+      return res.status(200).json(user);
+    } catch (error) {
+      return res.status(500).json({ error: "Error al buscar" });
     }
-
-    const user = await this.useCase.getUserByEmail(emailParam);
-
-    if (!user) {
-      return res.status(404).json({ message: "No encontrado" });
-    }
-
-    return res.status(200).json(user);
-  } catch (error) {
-    return res.status(500).json({ error: "Error al buscar" });
   }
-}
 
   async deleteUser(req: Request, res: Response): Promise<Response> {
     try {
@@ -96,7 +96,6 @@ export class UserController {
         return res.status(400).json({ error: "ID inválido" });
       }
 
-      // Llama al método deleteUser que ya tienes en UserApplication
       await this.useCase.deleteUser(id);
 
       return res.status(200).json({ message: "Usuario eliminado con éxito" });

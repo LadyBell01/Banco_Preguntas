@@ -6,10 +6,10 @@ export enum UserRoleEnum {
   DOCENTE_EXPERTO = "DocenteExperto",
 }
 
-@Entity('user')
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
-  id_user!: number;
+  id_users!: number;
 
   @Column({ type: "character varying", length: 255 })
   name_user!: string;

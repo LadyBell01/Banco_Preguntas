@@ -1,7 +1,7 @@
 import { Question } from "../entities/Question.js";
 
 export interface QuestionPort {
-  createQuestion(question: Omit<Question, "id">): Promise<number>;
+  createQuestion(question: Omit<Question, "id_questions">): Promise<number>;
   updateQuestion(id: number, question: Partial<Question>): Promise<boolean>;
   deleteQuestion(id: number): Promise<boolean>;
   getQuestionById(id: number): Promise<Question | null>;

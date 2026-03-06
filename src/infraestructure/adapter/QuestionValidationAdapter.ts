@@ -13,8 +13,8 @@ export class QuestionValidationAdapter implements QuestionValidationPort {
 
   private toDomain(validation: ValidationEntity): ValidationDomain {
     return {
-      id: validation.id_validation,
-      questionId: validation.question_id,
+      id_question_validations: validation.id_question_validations,
+      questionId: validation.questionId,
       validatorId: validation.validator_id,
       result: validation.result_validation as unknown as ValidationResult,
       observations: validation.observations_validation,
@@ -22,16 +22,16 @@ export class QuestionValidationAdapter implements QuestionValidationPort {
     };
   }
 
-  async createValidation(validation: Omit<ValidationDomain, "id" | "validatedAt">): Promise<number> {
+  async createValidation(validation: Omit<ValidationDomain, "id_question_validations" | "validatedAt">): Promise<number> {
     try {
       const newValidation = new ValidationEntity();
-      newValidation.question_id = validation.questionId;
+      newValidation.questionId = validation.questionId;
       newValidation.validator_id = validation.validatorId;
       newValidation.result_validation = validation.result as unknown as ValidationResultEnum;
       newValidation.observations_validation = validation.observations;
 
       const savedValidation = await this.validationRepository.save(newValidation);
-      return savedValidation.id_validation;
+      return savedValidation.id_question_validations;
     } catch (error) {
       console.error("Error creando validación:", error);
       throw new Error("Error al crear validación");
@@ -41,7 +41,7 @@ export class QuestionValidationAdapter implements QuestionValidationPort {
   async getValidationsByQuestionId(questionId: number): Promise<ValidationDomain[]> {
     try {
       const validations = await this.validationRepository.find({
-        where: { question_id: questionId },
+        where: { questionId: questionId },
         order: { validated_at: "DESC" },
       });
       return validations.map((v) => this.toDomain(v));
@@ -67,7 +67,7 @@ export class QuestionValidationAdapter implements QuestionValidationPort {
   async getLastValidation(questionId: number): Promise<ValidationDomain | null> {
     try {
       const validation = await this.validationRepository.findOne({
-        where: { question_id: questionId },
+        where: { questionId: questionId },
         order: { validated_at: "DESC" },
       });
       return validation ? this.toDomain(validation) : null;

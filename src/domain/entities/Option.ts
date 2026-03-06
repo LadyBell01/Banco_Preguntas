@@ -1,7 +1,7 @@
 export interface Option {
-  id: number;
+  id_options: number;
   text: string;
   isCorrect: boolean;
-  questionId: number;
+  question_id: number;
   active: number;
 }

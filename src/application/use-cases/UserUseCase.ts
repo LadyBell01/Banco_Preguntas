@@ -22,14 +22,14 @@ export class UserUseCase {
     }
 
     const token = AuthUseCase.generateToken({
-      id: existUser.id,
+      id: existUser.id_users,
       email: existUser.email,
       role: existUser.role,
     });
     return token;
   }
 
-  async createUser(user: Omit<User, "id">): Promise<number> {
+  async createUser(user: Omit<User, "id_users">): Promise<number> {
     const existUser = await this.port.getUserByEmail(user.email);
     if (existUser) {
       throw new Error("Este email ya está registrado");
@@ -60,7 +60,7 @@ export class UserUseCase {
 
     if (user.email) {
       const emailTaken = await this.port.getUserByEmail(user.email);
-      if (emailTaken && emailTaken.id !== id) {
+      if (emailTaken && emailTaken.id_users !== id) {
         throw new Error("El email ya está en uso");
       }
     }

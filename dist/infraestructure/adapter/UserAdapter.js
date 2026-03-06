@@ -1,3 +1,4 @@
+import { UserRole } from "../../domain/entities/User.js";
 import { User as UserEntity } from "../entities/User.js";
 import { AppDataSource } from "../config/data-base.js";
 export class UserAdapter {
@@ -5,22 +6,22 @@ export class UserAdapter {
     constructor() {
         this.userRepository = AppDataSource.getRepository(UserEntity);
     }
-    //Transforma la entidad de infraestructura(entidad User.ts) al modelo de dominio (interface User.ts)
     toDomain(user) {
         return {
-            id: user.id_user,
+            id_users: user.id_users,
             name: user.name_user,
             email: user.email_user,
             password: user.password_user,
+            role: user.role_user,
             status: user.status_user
         };
     }
-    //Transforma el modelo de dominio a la entidad de infraestructura
     toEntity(user) {
         const userEntity = new UserEntity();
         userEntity.name_user = user.name;
         userEntity.email_user = user.email;
         userEntity.password_user = user.password;
+        userEntity.role_user = (user.role || UserRole.DOCENTE);
         userEntity.status_user = user.status;
         return userEntity;
     }
@@ -28,7 +29,7 @@ export class UserAdapter {
         try {
             const newUser = this.toEntity(user);
             const savedUser = await this.userRepository.save(newUser);
-            return savedUser.id_user;
+            return savedUser.id_users;
         }
         catch (error) {
             console.error("Error creando usuario:", error);
@@ -37,14 +38,14 @@ export class UserAdapter {
     }
     async updateUser(id, user) {
         try {
-            const existingUser = await this.userRepository.findOne({ where: { id_user: id } });
+            const existingUser = await this.userRepository.findOne({ where: { id_users: id } });
             if (!existingUser)
                 return false;
-            // Actualizar solo los campos enviados
             Object.assign(existingUser, {
                 name_user: user.name ?? existingUser.name_user,
                 email_user: user.email ?? existingUser.email_user,
                 password_user: user.password ?? existingUser.password_user,
+                role_user: user.role ?? existingUser.role_user,
                 status_user: user.status ?? existingUser.status_user
             });
             await this.userRepository.save(existingUser);
@@ -57,7 +58,7 @@ export class UserAdapter {
     }
     async deleteUser(id) {
         try {
-            const existingUser = await this.userRepository.findOne({ where: { id_user: id } });
+            const existingUser = await this.userRepository.findOne({ where: { id_users: id } });
             if (!existingUser)
                 return false;
             // Actualizar solo el estatus a 0 baja
@@ -74,7 +75,7 @@ export class UserAdapter {
     }
     async getUserById(id) {
         try {
-            const user = await this.userRepository.findOne({ where: { id_user: id } });
+            const user = await this.userRepository.findOne({ where: { id_users: id } });
             return user ? this.toDomain(user) : null;
         }
         catch (error) {
@@ -90,10 +91,11 @@ export class UserAdapter {
         if (!user)
             return null;
         return {
-            id: user.id_user,
+            id_users: user.id_users,
             name: user.name_user,
             email: user.email_user,
             password: user.password_user,
+            role: user.role_user,
             status: user.status_user,
         };
     }

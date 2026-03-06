@@ -13,14 +13,14 @@ export class CourseAdapter implements CoursePort {
 
   private toDomain(course: CourseEntity): CourseDomain {
     return {
-      id: course.id_course,
+      id_courses: course.id_courses,
       name: course.name_course,
       description: course.description_course,
       status: course.status_course,
     };
   }
 
-  private toEntity(course: Omit<CourseDomain, "id">): CourseEntity {
+  private toEntity(course: Omit<CourseDomain, "id_courses">): CourseEntity {
     const courseEntity = new CourseEntity();
     courseEntity.name_course = course.name;
     courseEntity.description_course = course.description;
@@ -28,11 +28,11 @@ export class CourseAdapter implements CoursePort {
     return courseEntity;
   }
 
-  async createCourse(course: Omit<CourseDomain, "id">): Promise<number> {
+  async createCourse(course: Omit<CourseDomain, "id_courses">): Promise<number> {
     try {
       const newCourse = this.toEntity(course);
       const savedCourse = await this.courseRepository.save(newCourse);
-      return savedCourse.id_course;
+      return savedCourse.id_courses;
     } catch (error) {
       console.error("Error creando curso:", error);
       throw new Error("Error al crear curso");
@@ -42,7 +42,7 @@ export class CourseAdapter implements CoursePort {
   async updateCourse(id: number, course: Partial<CourseDomain>): Promise<boolean> {
     try {
       const existingCourse = await this.courseRepository.findOne({
-        where: { id_course: id },
+        where: { id_courses: id },
       });
       if (!existingCourse) return false;
 
@@ -63,7 +63,7 @@ export class CourseAdapter implements CoursePort {
   async deleteCourse(id: number): Promise<boolean> {
     try {
       const existingCourse = await this.courseRepository.findOne({
-        where: { id_course: id },
+        where: { id_courses: id },
       });
       if (!existingCourse) return false;
 
@@ -82,7 +82,7 @@ export class CourseAdapter implements CoursePort {
   async getCourseById(id: number): Promise<CourseDomain | null> {
     try {
       const course = await this.courseRepository.findOne({
-        where: { id_course: id },
+        where: { id_courses: id },
       });
       return course ? this.toDomain(course) : null;
     } catch (error) {
