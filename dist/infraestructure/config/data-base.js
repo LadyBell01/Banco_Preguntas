@@ -10,27 +10,44 @@ import { QuestionValidationEntity as QuestionValidation } from "../entities/Ques
 import envs from "../config/environment-vars.js";
 dotenv.config();
 console.log("Base de datos usada:", envs.DB_NAME);
-export const AppDataSource = new DataSource({
-    type: "postgres",
-    host: envs.DB_HOST,
-    port: Number(envs.DB_PORT),
-    username: envs.DB_USER,
-    password: envs.DB_PASSWORD,
-    database: envs.DB_NAME,
-    schema: "public",
-    synchronize: true,
-    logging: false,
-    ssl: true,
-    entities: [User, Category, Course, Unit, Question, Option, QuestionValidation],
-});
-//Método para la conexión a la base de datos
-export const connectDB = async () => {
-    try {
-        await AppDataSource.initialize();
-        console.log("Conectado a la base de datos PostgresSQL");
+export class DatabaseSingleton {
+    static instance;
+    constructor() { }
+    static getInstance() {
+        if (!DatabaseSingleton.instance) {
+            DatabaseSingleton.instance = new DataSource({
+                type: "postgres",
+                host: envs.DB_HOST,
+                port: Number(envs.DB_PORT),
+                username: envs.DB_USER,
+                password: envs.DB_PASSWORD,
+                database: envs.DB_NAME,
+                schema: "public",
+                synchronize: true,
+                logging: false,
+                ssl: true,
+                entities: [User, Category, Course, Unit, Question, Option, QuestionValidation],
+            });
+        }
+        return DatabaseSingleton.instance;
     }
-    catch (error) {
-        console.error("Error al conectar a la base de datos:", error);
-        process.exit(1);
+    static async connect() {
+        const dataSource = DatabaseSingleton.getInstance();
+        try {
+            if (!dataSource.isInitialized) {
+                await dataSource.initialize();
+                console.log("Conectado a la base de datos PostgreSQL");
+            }
+            else {
+                console.log("La conexión a la base de datos ya estaba inicializada");
+            }
+            return dataSource;
+        }
+        catch (error) {
+            console.error("Error al conectar a la base de datos:", error);
+            process.exit(1);
+        }
     }
-};
+}
+export const AppDataSource = DatabaseSingleton.getInstance();
+export const connectDB = () => DatabaseSingleton.connect();
